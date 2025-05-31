@@ -1,4 +1,4 @@
-const {getDb} = require('../config/db');
+const { getDb } = require('../config/db');
 
 exports.get = async (req, res, next) => {
     try {

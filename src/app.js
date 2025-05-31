@@ -1,15 +1,11 @@
 const express = require('express');
 const app = express();
 
-const createRouter = require('./routes/createRoute');
-const readRouter = require('./routes/readRoute');
-const updateRouter = require('./routes/updateRoute');
-const deleteRouter = require('./routes/deleteRoute');
+const appsRouter = require('./routes/apps');
+const permissionsRouter = require('./routes/permissions');
 
-app.use('/create', createRouter);
-app.use('/read', readRouter);
-app.use('/update', updateRouter);
-app.use('/delete', deleteRouter);
+app.use('/apps', appsRouter);
+app.use('/permissions', permissionsRouter);
 
 /*
  * Fallback for not handled paths

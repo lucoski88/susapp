@@ -1,5 +1,8 @@
 const app = require('./app');
-const { connectDb, getDb } = require('./config/db');
+
+const mongoose = require('mongoose');
+mongoose.set('strictQuery', false);
+const mongoDB = 'mongodb://localhost:27017';
 
 const port = 3000;
 
@@ -11,12 +14,11 @@ async function startServer() {
      * blocking until database connection is established correctly or
      * timeout for database connection occurs
      */
-    await connectDb();
-    const db = getDb();
-    if (db) {
-        console.log('Database initialized');
-    } else {
-        console.log("Couldn't initialize database");
+    try {
+        await mongoose.connect(mongoDB);
+        console.log('MongoDB Connected');
+    } catch (err) {
+        console.log('Failed to connect to MongoDB');
         process.exit(1);
     }
 

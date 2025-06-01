@@ -2,7 +2,7 @@ const app = require('./app');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
-const mongoDB = 'mongodb://localhost:27017/dio';
+const mongoDB = 'mongodb://localhost:27017/local';
 
 const port = 3000;
 

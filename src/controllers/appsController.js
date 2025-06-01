@@ -1,3 +1,8 @@
+const model = require('../models/appModel');
+
 exports.get = async (req, res, next) => {
-    res.send('app get');
+    const result = await model.findOne({},
+        {},
+        null);
+    res.json(result);
 };

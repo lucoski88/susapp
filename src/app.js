@@ -10,7 +10,7 @@ app.use('/permissions', permissionsRouter);
 /*
  * Fallback for not handled paths
  */
-app.use((req, res) => {
+app.use((req, res, next) => {
     res.sendStatus(404);
 });
 

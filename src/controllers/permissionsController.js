@@ -1,7 +1,6 @@
-const { getDb } = require('../config/db');
+const { model } = require('../models/permissionModel')
 
 exports.get = async (req, res, next) => {
-    let db = getDb();
-    let collection = db.collection('permissions');
-    res.json(await collection.findOne());
+    const result = await model.findOne();
+    res.json(result);
 };

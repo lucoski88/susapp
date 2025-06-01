@@ -9,6 +9,7 @@ router.post('/delete', () => {});
 
 router.use((err, req, res, next) => {
     res.sendStatus(500);
+    console.error(err);
 });
 
 module.exports = router;

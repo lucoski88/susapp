@@ -8,6 +8,4 @@ const PermissionSchema = new Schema({
     appName : String
 });
 
-const permissionModel = mongoose.model('permissions', PermissionSchema);
-
-exports.model = permissionModel;
+module.exports = mongoose.model('Permission', PermissionSchema);

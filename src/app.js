@@ -4,6 +4,7 @@ const app = express();
 const appsRouter = require('./routes/apps');
 const permissionsRouter = require('./routes/permissions');
 
+app.use(express.json());
 app.use('/apps', appsRouter);
 app.use('/permissions', permissionsRouter);
 

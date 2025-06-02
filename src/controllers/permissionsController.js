@@ -19,3 +19,7 @@ exports.find = async (req, res, next) => {
     const result = await Permission.find(filter).limit(limit);
     res.json(result);
 };
+
+exports.create = async (req, res, next) => {
+    console.log(req.body);
+}

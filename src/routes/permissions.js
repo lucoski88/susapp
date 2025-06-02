@@ -3,7 +3,7 @@ const router = express.Router();
 const permissionsController = require('../controllers/permissionsController');
 
 router.get('/', permissionsController.find);
-router.post('/create', () => {});
+router.post('/create', permissionsController.create);
 router.post('/update', () => {});
 router.post('/delete', () => {});
 

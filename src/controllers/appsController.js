@@ -5,11 +5,12 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.get = async (req, res, next) => {
-    const { appName, rating } = req.query;
+    const { appName, rating, free } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
     if (rating) filter['Rating'] = rating;
+    if (free) filter['Free'] = free;
 
     let limit = req.query.limit;
     if (limit) {

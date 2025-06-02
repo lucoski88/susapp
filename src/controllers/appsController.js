@@ -24,6 +24,14 @@ exports.find = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     const app = new App(req.body);
-    const doc = await app.save();
-    res.json(doc);
+    try {
+        const doc = await app.save();
+        res.json(doc);
+    } catch (err) {
+        if (err.name === 'MongoServerError' && err.code === 11000) {
+            res.status(409).json({ error: 'Duplicate entry. A record with the same unique key already exists.' });
+        } else {
+            next(err);
+        }
+    }
 };

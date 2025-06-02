@@ -45,7 +45,16 @@ exports.create = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-    
+    const { appName, appId, rating, free } = req.query;
+    const filter = {};
+
+    if (appName) filter['App Name'] = appName;
+    if (appId) filter['App Id'] = appId;
+    if (rating) filter['Rating'] = rating;
+    if (free) filter['Free'] = free;
+
+    const result = App.updateMany(filter, req.body);
+    res.json(result);
 };
 
 exports.delete = async (req, res, next) => {

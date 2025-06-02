@@ -4,10 +4,11 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appName, rating, free } = req.query;
+    const { appName, appId, rating, free } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
+    if (appId) filter['App Id'] = appId;
     if (rating) filter['Rating'] = rating;
     if (free) filter['Free'] = free;
 

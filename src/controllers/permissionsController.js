@@ -3,7 +3,7 @@ const Permission = require('../models/permissionModel')
 const defaultLimit = 10;
 const maxLimit = 100;
 
-exports.get = async (req, res, next) => {
+exports.find = async (req, res, next) => {
     const { appId, appName } = req.query;
     const filter = {};
     if (appId) filter.appId = appId;

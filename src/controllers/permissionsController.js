@@ -22,4 +22,7 @@ exports.find = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     console.log(req.body);
+    const permissionDetail = new Permission(req.body);
+    const doc = await permissionDetail.save();
+    res.json(doc);
 }

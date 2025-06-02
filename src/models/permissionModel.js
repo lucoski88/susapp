@@ -8,10 +8,9 @@ const PermissionArraySchema = new Schema({
 }, { _id: false });
 
 const PermissionSchema = new Schema({
-    _id: String,
     appId : String,
     appName : String,
     allPermissions: [PermissionArraySchema]
-});
+}, { versionKey: false });
 
 module.exports = mongoose.model('Permission', PermissionSchema);

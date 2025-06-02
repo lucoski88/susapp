@@ -38,6 +38,8 @@ exports.create = async (req, res, next) => {
             const incomingFields = Object.keys(req.body);
             const extraFields = incomingFields.filter(field => !allowed.includes(field));
             res.status(400).json({ error: ('Request contains unknown fields: ' + extraFields)});
+        } else if (err.name === 'ValidationError' && req.body['App Id'] === undefined) {
+            res.status(400).json({ error: 'Missing \'App Id\' field' });
         } else {
             next(err);
         }

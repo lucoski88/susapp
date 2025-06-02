@@ -3,7 +3,7 @@ const router = express.Router();
 const appsController = require('../controllers/appsController');
 
 router.get('/', appsController.find);
-router.post('/create', () => {});
+router.post('/create', appsController.create);
 router.post('/update', () => {});
 router.post('/delete', () => {});
 

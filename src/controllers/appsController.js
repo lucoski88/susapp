@@ -1,5 +1,4 @@
 const App = require('../models/appModel');
-const Permission = require("../models/permissionModel");
 
 const defaultLimit = 10;
 const maxLimit = 100;
@@ -21,4 +20,10 @@ exports.find = async (req, res, next) => {
 
     const result = await App.find(filter).limit(limit);
     res.json(result);
+};
+
+exports.create = async (req, res, next) => {
+    const app = new App(req.body);
+    const doc = await app.save();
+    res.json(doc);
 };

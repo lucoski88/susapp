@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const AppSchema = new Schema({
-    _id: String,
     'App Name': String,
     'App Id': String,
     'Category': String,
@@ -28,6 +27,9 @@ const AppSchema = new Schema({
     'In App Purchases': Schema.Types.Boolean,
     'Editors Choice': Schema.Types.Boolean,
     'Scraped Time': String
+}, {
+    strict: 'throw',
+    versionKey: false
 });
 
 module.exports = mongoose.model('App', AppSchema);

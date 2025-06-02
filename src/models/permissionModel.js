@@ -8,6 +8,7 @@ const PermissionArraySchema = new Schema({
 }, {
     _id: false,
     strict: 'throw',
+    versionKey: false
 });
 
 const PermissionSchema = new Schema({

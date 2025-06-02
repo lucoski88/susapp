@@ -5,12 +5,18 @@ const Schema = mongoose.Schema;
 const PermissionArraySchema = new Schema({
     permission: String,
     type: String
-}, { _id: false });
+}, {
+    _id: false,
+    strict: 'throw',
+});
 
 const PermissionSchema = new Schema({
     appId : String,
     appName : String,
     allPermissions: [PermissionArraySchema]
-}, { versionKey: false });
+}, {
+    versionKey: false,
+    strict: 'throw'
+});
 
 module.exports = mongoose.model('Permission', PermissionSchema);

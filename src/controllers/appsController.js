@@ -58,5 +58,14 @@ exports.update = async (req, res, next) => {
 };
 
 exports.delete = async (req, res, next) => {
+    const { appName, appId, rating, free } = req.query;
+    const filter = {};
 
+    if (appName) filter['App Name'] = appName;
+    if (appId) filter['App Id'] = appId;
+    if (rating) filter['Rating'] = rating;
+    if (free) filter['Free'] = free;
+
+    const result = await App.deleteMany(filter);
+    res.json(result);
 };

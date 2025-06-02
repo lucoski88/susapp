@@ -5,7 +5,7 @@ const permissionsController = require('../controllers/permissionsController');
 router.get('/', permissionsController.find);
 router.post('/create', permissionsController.create);
 router.post('/update', permissionsController.update);
-router.post('/delete', () => {});
+router.delete('/delete', permissionsController.delete);
 
 router.use((err, req, res, next) => {
     res.sendStatus(500);

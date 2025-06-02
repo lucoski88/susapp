@@ -49,3 +49,13 @@ exports.update = async (req, res, next) => {
     const result = await Permission.updateMany(filter, req.body);
     res.json(result);
 }
+
+exports.delete = async (req, res, next) => {
+    const { appId, appName } = req.query;
+    const filter = {};
+    if (appId) filter.appId = appId;
+    if (appName) filter.appName = appName;
+
+    const result = await Permission.deleteMany(filter);
+    res.json(result);
+}

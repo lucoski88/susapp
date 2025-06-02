@@ -12,7 +12,10 @@ const PermissionArraySchema = new Schema({
 });
 
 const PermissionSchema = new Schema({
-    appId : String,
+    appId : {
+        type: String,
+        required: true
+    },
     appName : String,
     allPermissions: [PermissionArraySchema]
 }, {

@@ -11,7 +11,7 @@ exports.get = async (req, res, next) => {
 
     let limit = req.query.limit;
     if (limit) {
-        Math.min(maxLimit, limit);
+        limit = Math.min(maxLimit, limit);
     } else {
         limit = defaultLimit;
     }

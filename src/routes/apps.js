@@ -4,8 +4,8 @@ const appsController = require('../controllers/appsController');
 
 router.get('/', appsController.find);
 router.post('/create', appsController.create);
-router.post('/update', () => {});
-router.post('/delete', () => {});
+router.post('/update', appsController.update);
+router.post('/delete', appsController.delete);
 
 router.use((err, req, res, next) => {
     res.sendStatus(500);

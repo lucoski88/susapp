@@ -23,6 +23,14 @@ exports.find = async (req, res, next) => {
 exports.create = async (req, res, next) => {
     console.log(req.body);
     const permissionDetail = new Permission(req.body);
-    const doc = await permissionDetail.save();
-    res.json(doc);
+    try {
+        const doc = await permissionDetail.save();
+        res.json(doc);
+    } catch (err) {
+        if (err.name === 'MongoServerError' && err.code === 11000) {
+            res.status(409).json({ error: 'Duplicate entry. A record with the same unique key already exists.' });
+        } else {
+            next(err);
+        }
+    }
 }

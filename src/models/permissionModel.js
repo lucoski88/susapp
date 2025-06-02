@@ -14,7 +14,8 @@ const PermissionArraySchema = new Schema({
 const PermissionSchema = new Schema({
     appId : {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     appName : String,
     allPermissions: [PermissionArraySchema]

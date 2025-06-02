@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const AppSchema = new Schema({
     'App Name': String,
-    'App Id': String,
+    'App Id': { type: String, required: true },
     'Category': String,
     'Rating': Schema.Types.Double,
     'Rating Count': Schema.Types.Int32,

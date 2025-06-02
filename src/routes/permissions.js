@@ -4,7 +4,7 @@ const permissionsController = require('../controllers/permissionsController');
 
 router.get('/', permissionsController.find);
 router.post('/create', permissionsController.create);
-router.post('/update', () => {});
+router.post('/update', permissionsController.update);
 router.post('/delete', () => {});
 
 router.use((err, req, res, next) => {

@@ -21,14 +21,19 @@ exports.find = async (req, res, next) => {
 };
 
 exports.create = async (req, res, next) => {
-    console.log(req.body);
-    const permissionDetail = new Permission(req.body);
     try {
+        const permissionDetail = new Permission(req.body);
         const doc = await permissionDetail.save();
         res.json(doc);
     } catch (err) {
         if (err.name === 'MongoServerError' && err.code === 11000) {
             res.status(409).json({ error: 'Duplicate entry. A record with the same unique key already exists.' });
+        } else if (err.name === 'StrictModeError') {
+            const allowedFields = Object.keys(Permission.schema.paths);
+            const allowed = allowedFields.filter(field => !['_id'].includes(field));
+            const incomingFields = Object.keys(req.body);
+            const extraFields = incomingFields.filter(field => !allowed.includes(field));
+            res.status(400).json({ error: ('Request contains unknown fields: ' + extraFields)});
         } else {
             next(err);
         }

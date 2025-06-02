@@ -46,13 +46,6 @@ exports.update = async (req, res, next) => {
     if (appId) filter.appId = appId;
     if (appName) filter.appName = appName;
 
-    let limit = req.query.limit;
-    if (limit) {
-        limit = Math.min(maxLimit, limit);
-    } else {
-        limit = defaultLimit;
-    }
-
     const result = await Permission.updateMany(filter, req.body);
     res.json(result);
 }

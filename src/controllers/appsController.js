@@ -53,7 +53,7 @@ exports.update = async (req, res, next) => {
     if (rating) filter['Rating'] = rating;
     if (free) filter['Free'] = free;
 
-    const result = App.updateMany(filter, req.body);
+    const result = await App.updateMany(filter, req.body);
     res.json(result);
 };
 

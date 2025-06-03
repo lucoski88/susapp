@@ -19,7 +19,19 @@ exports.find = async (req, res, next) => {
         limit = defaultLimit;
     }
 
-    const result = await App.find(filter).limit(limit);
+    const result = await App.aggregate([
+        {
+            $lookup: {
+                from: 'permissions',
+                localField: 'App Id',
+                foreignField: 'appId',
+                as: 'permissions'
+            }
+        },
+        {
+            $match: filter
+        }
+    ]).limit(limit);
     res.json(result);
 };
 

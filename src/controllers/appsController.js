@@ -1,5 +1,4 @@
 const App = require('../models/appModel');
-const Permission = require("../models/permissionModel");
 
 const defaultLimit = 10;
 const maxLimit = 100;

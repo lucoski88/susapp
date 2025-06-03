@@ -4,10 +4,25 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appId, appName } = req.query;
+    const { appId, appName, types } = req.query;
     const filter = {};
     if (appId) filter.appId = appId;
     if (appName) filter.appName = appName;
+    if (types) {
+        let typesArray;
+        if (typeof types === 'string') {
+            typesArray = types.split(',').map(t => t.trim());
+        } else if (Array.isArray(types)) {
+            typesArray = types;
+        } else {
+            typesArray = [types];
+        }
+        filter.allPermissions = {
+            $elemMatch: {
+                type: { $in: typesArray }
+            }
+        };
+    }
 
     let limit = req.query.limit;
     if (limit) {

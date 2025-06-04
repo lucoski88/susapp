@@ -6,6 +6,7 @@ router.get('/', permissionsController.find);
 router.post('/create', permissionsController.create);
 router.post('/update', permissionsController.update);
 router.delete('/delete', permissionsController.delete);
+router.get('/types', permissionsController.getAllTypes);
 
 router.use((err, req, res, next) => {
     res.sendStatus(500);

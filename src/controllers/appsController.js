@@ -25,6 +25,18 @@ exports.find = async (req, res, next) => {
                 from: 'permissions',
                 localField: 'App Id',
                 foreignField: 'appId',
+                pipeline: [
+                    {
+                        $unwind: '$allPermissions'
+                    },
+                    {
+                        $project: {
+                            _id: 0,
+                            permission: '$allPermissions.permission',
+                            type: '$allPermissions.type',
+                        }
+                    }
+                ],
                 as: 'permissions'
             }
         },

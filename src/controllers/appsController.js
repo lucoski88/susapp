@@ -1,5 +1,4 @@
 const App = require('../models/appModel');
-const Permission = require("../models/permissionModel");
 
 const defaultLimit = 10;
 const maxLimit = 100;
@@ -105,7 +104,7 @@ exports.getAllCategories =  async (req, res, next) => {
     const result = await App.distinct('Category');
     const filtered = await result.filter(type => type !== null && type !== undefined);
     res.json(filtered);
-}
+};
 
 exports.getAllContentRatings =  async (req, res, next) => {
     const result = await App.distinct('Content Rating');

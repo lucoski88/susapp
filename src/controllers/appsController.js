@@ -5,13 +5,18 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appName, appId, rating, free } = req.query;
+    const { appName, appId, category, contentRating, developerId, installs, price, rating } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
     if (appId) filter['App Id'] = appId;
+    if (category) filter['Category'] = category;
+    if (contentRating) filter['Content Rating'] = contentRating;
+    if (developerId) filter['Developer Id'] = developerId;
+    if (installs) filter['Maximum Installs'] = installs;
+    if (price) filter['Price'] = price;
     if (rating) filter['Rating'] = rating;
-    if (free) filter['Free'] = free;
+
 
     let limit = req.query.limit;
     if (limit) {
@@ -101,3 +106,9 @@ exports.getAllCategories =  async (req, res, next) => {
     const filtered = await result.filter(type => type !== null && type !== undefined);
     res.json(filtered);
 }
+
+exports.getAllContentRatings =  async (req, res, next) => {
+    const result = await App.distinct('Content Rating');
+    const filtered = await result.filter(type => type !== null && type !== undefined);
+    res.json(filtered);
+};

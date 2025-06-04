@@ -13,9 +13,9 @@ exports.find = async (req, res, next) => {
     if (category) filter['Category'] = category;
     if (contentRating) filter['Content Rating'] = contentRating;
     if (developerId) filter['Developer Id'] = developerId;
-    if (installs) filter['Maximum Installs'] = installs;
-    if (price) filter['Price'] = price;
-    if (rating) filter['Rating'] = rating;
+    if (installs) filter['Maximum Installs'] = parseInt(installs);
+    if (price) filter['Price'] = parseFloat(price);
+    if (rating) filter['Rating'] = parseFloat(rating);
 
 
     let limit = req.query.limit;

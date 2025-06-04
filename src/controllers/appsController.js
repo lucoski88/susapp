@@ -23,13 +23,13 @@ exports.find = async (req, res, next) => {
     }
     if (minPrice || maxPrice) {
         filter['Price'] = {};
-        if (minInstalls) filter['Price'].$gte = parseFloat(minPrice);
-        if (maxInstalls) filter['Price'].$lte = parseFloat(maxPrice);
+        if (minPrice) filter['Price'].$gte = parseFloat(minPrice);
+        if (maxPrice) filter['Price'].$lte = parseFloat(maxPrice);
     }
     if (minRating || maxRating) {
         filter['Rating'] = {};
-        if (minInstalls) filter['Rating'].$gte = parseFloat(minRating);
-        if (maxInstalls) filter['Rating'].$lte = parseFloat(maxRating);
+        if (minRating) filter['Rating'].$gte = parseFloat(minRating);
+        if (maxRating) filter['Rating'].$lte = parseFloat(maxRating);
     }
 
 

@@ -35,44 +35,6 @@ exports.find = async (req, res, next) => {
     res.json(result);
 };
 
-exports.getAllTypes =  async (req, res, next) => {
-    const {types} = req.query;
-    let typesArray;
-    if (types) {
-        if (typeof types === 'string') {
-            typesArray = types.split(',').map(t => t.trim());
-        } else if (Array.isArray(types)) {
-            typesArray = types;
-        } else {
-            typesArray = [types];
-        }
-    }
-    const matchStage = typesArray
-        ? {$match: {'allPermissions.type': {$in: typesArray}}}
-        : null;
-    const pipeline = [
-        {$unwind: '$allPermissions'},
-        ...(matchStage ? [matchStage] : []),
-        {
-            $group: {
-                _id: '$allPermissions.type',
-                descriptions: {$addToSet: '$allPermissions.permission'}
-            }
-        },
-        {
-            $project: {
-                _id: 0,
-                type: '$_id',
-                descriptions: 1
-            }
-        }
-    ];
-
-    const result = await Permission.distinct('allPermissions.type');
-    const filtered = await result.filter(type => type !== null && type !== undefined);
-    res.json(filtered);
-};
-
 exports.create = async (req, res, next) => {
     try {
         const permissionDetail = new Permission(req.body);
@@ -113,4 +75,10 @@ exports.delete = async (req, res, next) => {
 
     const result = await Permission.deleteMany(filter);
     res.json(result);
+};
+
+exports.getAllTypes =  async (req, res, next) => {
+    const result = await Permission.distinct('allPermissions.type');
+    const filtered = await result.filter(type => type !== null && type !== undefined);
+    res.json(filtered);
 };

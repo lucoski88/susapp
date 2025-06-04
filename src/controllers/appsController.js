@@ -4,7 +4,11 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appName, appId, category, contentRating, developerId, minInstalls, maxInstalls, price, rating } = req.query;
+    const { appName, appId, category,
+        contentRating, developerId,
+        minInstalls, maxInstalls,
+        minPrice, maxPrice,
+        minRating, maxRating } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
@@ -12,14 +16,21 @@ exports.find = async (req, res, next) => {
     if (category) filter['Category'] = category;
     if (contentRating) filter['Content Rating'] = contentRating;
     if (developerId) filter['Developer Id'] = developerId;
-    //if (installs) filter['Maximum Installs'] = parseInt(installs);
     if (minInstalls || maxInstalls) {
         filter['Maximum Installs'] = {};
         if (minInstalls) filter['Maximum Installs'].$gte = parseInt(minInstalls);
         if (maxInstalls) filter['Maximum Installs'].$lte = parseInt(maxInstalls);
     }
-    if (price) filter['Price'] = parseFloat(price);
-    if (rating) filter['Rating'] = parseFloat(rating);
+    if (minPrice || maxPrice) {
+        filter['Price'] = {};
+        if (minInstalls) filter['Price'].$gte = parseFloat(minPrice);
+        if (maxInstalls) filter['Price'].$lte = parseFloat(maxPrice);
+    }
+    if (minRating || maxRating) {
+        filter['Rating'] = {};
+        if (minInstalls) filter['Rating'].$gte = parseFloat(minRating);
+        if (maxInstalls) filter['Rating'].$lte = parseFloat(maxRating);
+    }
 
 
     let limit = req.query.limit;

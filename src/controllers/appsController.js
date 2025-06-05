@@ -42,6 +42,9 @@ exports.find = async (req, res, next) => {
 
     const result = await App.aggregate([
         {
+            $match: filter
+        },
+        {
             $lookup: {
                 from: 'permissions',
                 localField: 'App Id',
@@ -60,9 +63,6 @@ exports.find = async (req, res, next) => {
                 ],
                 as: 'permissions'
             }
-        },
-        {
-            $match: filter
         }
     ]).limit(limit);
     res.json(result);

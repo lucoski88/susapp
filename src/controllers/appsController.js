@@ -94,6 +94,7 @@ exports.update = async (req, res, next) => {
     const { appId } = req.query;
     if (!appId) {
         res.status(400).json({ error: 'Missing \'appId\' field' });
+        return;
     }
 
     const filter = { 'App Id': appId };

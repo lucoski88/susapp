@@ -8,7 +8,8 @@ exports.find = async (req, res, next) => {
         contentRating, developerId,
         minInstalls, maxInstalls,
         minPrice, maxPrice,
-        minRating, maxRating } = req.query;
+        minRating, maxRating,
+        permissionType } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
@@ -30,6 +31,21 @@ exports.find = async (req, res, next) => {
         filter['Rating'] = {};
         if (minRating) filter['Rating'].$gte = parseFloat(minRating);
         if (maxRating) filter['Rating'].$lte = parseFloat(maxRating);
+    }
+
+    const permissionFilter = {}
+    if (permissionType) {
+        let typesArray;
+        if (typeof permissionType === 'string') {
+            typesArray = permissionType.split(',').map(t => t.trim());
+        } else if (Array.isArray(permissionType)) {
+            typesArray = permissionType;
+        } else {
+            typesArray = [permissionType];
+        }
+        permissionFilter['permissions.type'] = {
+            $in: typesArray
+        };
     }
 
 
@@ -63,6 +79,9 @@ exports.find = async (req, res, next) => {
                 ],
                 as: 'permissions'
             }
+        },
+        {
+            $match: permissionFilter
         }
     ]).limit(limit);
     res.json(result);

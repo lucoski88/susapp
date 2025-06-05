@@ -91,13 +91,12 @@ exports.create = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-    const { appName, appId, rating, free } = req.query;
-    const filter = {};
+    const { appId } = req.query;
+    if (!appId) {
+        res.status(400).json({ error: 'Missing \'appId\' field' });
+    }
 
-    if (appName) filter['App Name'] = appName;
-    if (appId) filter['App Id'] = appId;
-    if (rating) filter['Rating'] = rating;
-    if (free) filter['Free'] = free;
+    const filter = { 'App Id': appId };
 
     const result = await App.updateMany(filter, req.body);
     res.json(result);

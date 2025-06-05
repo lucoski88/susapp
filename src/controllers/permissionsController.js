@@ -58,10 +58,12 @@ exports.create = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-    const { appId, appName } = req.query;
-    const filter = {};
-    if (appId) filter.appId = appId;
-    if (appName) filter.appName = appName;
+    const { appId } = req.query;
+    if (!appId) {
+        res.status(400).json({ error: 'Missing \'appId\' field' });
+    }
+
+    const filter = { appId: appId };
 
     const result = await Permission.updateMany(filter, req.body);
     res.json(result);

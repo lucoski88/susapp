@@ -3,8 +3,14 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const PermissionArraySchema = new Schema({
-    permission: String,
-    type: String
+    permission: {
+        type: String,
+        index: true
+    },
+    type: {
+        type: String,
+        index: true
+    }
 }, {
     _id: false,
     strict: 'throw',
@@ -15,7 +21,8 @@ const PermissionSchema = new Schema({
     appId : {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        index: true
     },
     appName : String,
     allPermissions: [PermissionArraySchema]

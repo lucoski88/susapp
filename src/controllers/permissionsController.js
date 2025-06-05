@@ -71,10 +71,13 @@ exports.update = async (req, res, next) => {
 };
 
 exports.delete = async (req, res, next) => {
-    const { appId, appName } = req.query;
-    const filter = {};
-    if (appId) filter.appId = appId;
-    if (appName) filter.appName = appName;
+    const { appId } = req.query;
+    if (!appId) {
+        res.status(400).json({ error: 'Missing \'appId\' field' });
+        return;
+    }
+
+    const filter = { appId: appId };
 
     const result = await Permission.deleteMany(filter);
     res.json(result);

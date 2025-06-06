@@ -8,7 +8,8 @@ exports.find = async (req, res, next) => {
         contentRating, developerId,
         minInstalls, maxInstalls,
         minPrice, maxPrice,
-        minRating, maxRating } = req.query;
+        minRating, maxRating,
+        permissionType } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
@@ -30,6 +31,21 @@ exports.find = async (req, res, next) => {
         filter['Rating'] = {};
         if (minRating) filter['Rating'].$gte = parseFloat(minRating);
         if (maxRating) filter['Rating'].$lte = parseFloat(maxRating);
+    }
+
+    const permissionFilter = {}
+    if (permissionType) {
+        let typesArray;
+        if (typeof permissionType === 'string') {
+            typesArray = permissionType.split(',').map(t => t.trim());
+        } else if (Array.isArray(permissionType)) {
+            typesArray = permissionType;
+        } else {
+            typesArray = [permissionType];
+        }
+        permissionFilter['permissions.type'] = {
+            $in: typesArray
+        };
     }
 
 
@@ -63,6 +79,9 @@ exports.find = async (req, res, next) => {
                 ],
                 as: 'permissions'
             }
+        },
+        {
+            $match: permissionFilter
         }
     ]).limit(limit);
     res.json(result);
@@ -72,7 +91,7 @@ exports.create = async (req, res, next) => {
     try {
         const app = new App(req.body);
         const doc = await app.save();
-        res.json(doc);
+        res.status(201).json(doc);
     } catch (err) {
         if (err.name === 'MongoServerError' && err.code === 11000) {
             res.status(409).json({ error: 'Duplicate entry. A record with the same unique key already exists.' });
@@ -91,26 +110,26 @@ exports.create = async (req, res, next) => {
 };
 
 exports.update = async (req, res, next) => {
-    const { appName, appId, rating, free } = req.query;
-    const filter = {};
+    const { appId } = req.query;
+    if (!appId) {
+        res.status(400).json({ error: 'Missing \'appId\' field' });
+        return;
+    }
 
-    if (appName) filter['App Name'] = appName;
-    if (appId) filter['App Id'] = appId;
-    if (rating) filter['Rating'] = rating;
-    if (free) filter['Free'] = free;
+    const filter = { 'App Id': appId };
 
     const result = await App.updateMany(filter, req.body);
     res.json(result);
 };
 
 exports.delete = async (req, res, next) => {
-    const { appName, appId, rating, free } = req.query;
-    const filter = {};
+    const { appId } = req.query;
+    if (!appId) {
+        res.status(400).json({ error: 'Missing \'appId\' field' });
+        return;
+    }
 
-    if (appName) filter['App Name'] = appName;
-    if (appId) filter['App Id'] = appId;
-    if (rating) filter['Rating'] = rating;
-    if (free) filter['Free'] = free;
+    const filter = { 'App Id': appId };
 
     const result = await App.deleteMany(filter);
     res.json(result);

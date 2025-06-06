@@ -3,9 +3,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const AppSchema = new Schema({
-    'App Name': String,
-    'App Id': { type: String, required: true },
-    'Category': String,
+    'App Name': { type: String, index: true },
+    'App Id': { type: String, required: true, unique: true, index: true },
+    'Category': { type: String, index: true },
     'Rating': Schema.Types.Double,
     'Rating Count': Schema.Types.Int32,
     'Installs': String,
@@ -21,7 +21,7 @@ const AppSchema = new Schema({
     'Developer Email': String,
     'Released': String,
     'Last Updated': String,
-    'Content Rating': String,
+    'Content Rating': { type: String, index: true },
     'Privacy Policy': String,
     'Ad Supported': Schema.Types.Boolean,
     'In App Purchases': Schema.Types.Boolean,

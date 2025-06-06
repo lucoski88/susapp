@@ -9,7 +9,7 @@ exports.find = async (req, res, next) => {
         minInstalls, maxInstalls,
         minPrice, maxPrice,
         minRating, maxRating,
-        permissionType } = req.query;
+        permissionType, skip } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
@@ -83,7 +83,7 @@ exports.find = async (req, res, next) => {
         {
             $match: permissionFilter
         }
-    ]).limit(limit);
+    ]).skip(skip).limit(limit);
     res.json(result);
 };
 

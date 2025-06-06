@@ -4,7 +4,7 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appId, appName, types } = req.query;
+    const { appId, appName, types, skip } = req.query;
     const filter = {};
     if (appId) filter.appId = appId;
     if (appName) filter.appName = appName;
@@ -31,7 +31,7 @@ exports.find = async (req, res, next) => {
         limit = defaultLimit;
     }
 
-    const result = await Permission.find(filter).limit(limit);
+    const result = await Permission.find(filter).skip(skip).limit(limit);
     res.json(result);
 };
 

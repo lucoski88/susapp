@@ -9,7 +9,7 @@ exports.find = async (req, res, next) => {
         minInstalls, maxInstalls,
         minPrice, maxPrice,
         minRating, maxRating,
-        permissionType, skip } = req.query;
+        permissionType } = req.query;
     const filter = {};
 
     if (appName) filter['App Name'] = appName;
@@ -32,6 +32,7 @@ exports.find = async (req, res, next) => {
         if (minRating) filter['Rating'].$gte = parseFloat(minRating);
         if (maxRating) filter['Rating'].$lte = parseFloat(maxRating);
     }
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
 
     const permissionFilter = {}
     if (permissionType) {

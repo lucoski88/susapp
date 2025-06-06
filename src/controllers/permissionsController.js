@@ -4,7 +4,7 @@ const defaultLimit = 10;
 const maxLimit = 100;
 
 exports.find = async (req, res, next) => {
-    const { appId, appName, types, skip } = req.query;
+    const { appId, appName, types } = req.query;
     const filter = {};
     if (appId) filter.appId = appId;
     if (appName) filter.appName = appName;
@@ -23,7 +23,7 @@ exports.find = async (req, res, next) => {
             }
         };
     }
-
+    const skip = req.query.skip ? parseInt(req.query.skip) : 0;
     let limit = req.query.limit;
     if (limit) {
         limit = Math.min(maxLimit, limit);

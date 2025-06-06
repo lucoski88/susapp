@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Query Interface</title>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>App Query Interface</h1>
+            <p>Search and analyze mobile applications with advanced filtering</p>
+        </div>
+
+        <div class="search-section">
+            <form id="searchForm">
+                <div class="form-grid">
+                    <!-- Basic App Information -->
+                    <div class="form-group">
+                        <label for="appName">App Name</label>
+                        <input type="text" id="appName" name="appName" placeholder="Search by app name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="appId">App ID</label>
+                        <input type="text" id="appId" name="appId" placeholder="Enter specific app ID">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" name="category">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contentRating">Content Rating</label>
+                        <select id="contentRating" name="contentRating">
+                            <option value="">All Ratings</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="developerId">Developer ID</label>
+                        <input type="text" id="developerId" name="developerId" placeholder="Enter developer ID">
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="form-group">
+                        <label>Price Range</label>
+                        <div class="range-group">
+                            <input type="number" id="minPrice" name="minPrice" class="double-input" placeholder="Min ($)" step="0.01" min="0">
+                            <input type="number" id="maxPrice" name="maxPrice" class="double-input" placeholder="Max ($)" step="0.01" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Rating Range -->
+                    <div class="form-group">
+                        <label>Rating Range</label>
+                        <div class="range-group">
+                            <input type="number" id="minRating" name="minRating" class="double-input" placeholder="Min Rating" step="0.1" min="0" max="5">
+                            <input type="number" id="maxRating" name="maxRating" class="double-input" placeholder="Max Rating" step="0.1" min="0" max="5">
+                        </div>
+                    </div>
+
+                    <!-- Install Range -->
+                    <div class="form-group">
+                        <label>Install Range</label>
+                        <div class="range-group">
+                            <input type="number" id="minInstalls" name="minInstalls" class="double-input" placeholder="Min Installs" min="0">
+                            <input type="number" id="maxInstalls" name="maxInstalls" class="double-input" placeholder="Max Installs" min="0">
+                        </div>
+                    </div>
+
+                    <!-- Permission Types -->
+                    <div class="form-group">
+                        <label for="permissionTypes">Permission Types</label>
+                        <select id="permissionTypes" name="permissionTypes" multiple style="height: 80px;">
+                            <option value="">Loading permission types...</option>
+                        </select>
+                        <small style="color: #666; font-size: 0.8rem;">Hold Ctrl/Cmd to select multiple types</small>
+                    </div>
+
+                    <!-- Results Limit -->
+                    <div class="form-group">
+                        <label for="limit">Results Limit</label>
+                        <select id="limit" name="limit">
+                            <option value="10">10 results</option>
+                            <option value="25">25 results</option>
+                            <option value="50">50 results</option>
+                            <option value="100">100 results</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">Search Apps</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear Form</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-section" id="resultsSection" style="display: none;">
+            <div class="results-header">
+                <h2>Search Results</h2>
+                <div class="results-count" id="resultsCount"></div>
+            </div>
+            <div class="table-container" id="tableContainer">
+                <!-- Results table will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts/index.js"></script>
+</body>
+</html>

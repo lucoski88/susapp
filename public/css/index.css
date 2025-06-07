@@ -217,9 +217,14 @@ tr:hover {
 
 .permissions-cell {
     max-width: 300px;
-    max-height: 100px;
-    overflow-y: auto;
+    height: 100px;
+    overflow-y: scroll;
     font-size: 0.85rem;
+}
+
+.permissions-cell>div{
+    height: 100%;
+    overflow-y: scroll;
 }
 
 .permission-tag {

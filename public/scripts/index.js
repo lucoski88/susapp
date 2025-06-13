@@ -2,7 +2,7 @@ const API_BASE_URL = 'http://localhost:3000';
 
 // State management
 let currentResults = [];
-let curranteManageData = [];
+let currentManageData = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -20,13 +20,32 @@ async function initializeForm() {
         const categoriesResponse = await fetch(`${API_BASE_URL}/apps/categories`);
         if (categoriesResponse.ok) {
             const categories = await categoriesResponse.json();
-            const categorySelect = document.getElementById('category');
             
+            // Populate search form category dropdown
+            const categorySelect = document.getElementById('category');
             categories.forEach(category => {
                 const option = document.createElement('option');
                 option.value = category;
                 option.textContent = category;
                 categorySelect.appendChild(option);
+            });
+
+            // Populate create form category dropdown
+            const createCategorySelect = document.getElementById('createCategory');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                createCategorySelect.appendChild(option);
+            });
+
+            // Populate edit form category dropdown
+            const editCategorySelect = document.getElementById('editCategory');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                editCategorySelect.appendChild(option);
             });
         }
 
@@ -34,47 +53,97 @@ async function initializeForm() {
         const ratingsResponse = await fetch(`${API_BASE_URL}/apps/contentRatings`);
         if (ratingsResponse.ok) {
             const ratings = await ratingsResponse.json();
-            const ratingSelect = document.getElementById('contentRating');
             
+            // Populate search form content rating dropdown
+            const ratingSelect = document.getElementById('contentRating');
             ratings.forEach(rating => {
                 const option = document.createElement('option');
                 option.value = rating;
                 option.textContent = rating;
                 ratingSelect.appendChild(option);
             });
+
+            // Populate create form content rating dropdown
+            const createRatingSelect = document.getElementById('createContentRating');
+            ratings.forEach(rating => {
+                const option = document.createElement('option');
+                option.value = rating;
+                option.textContent = rating;
+                createRatingSelect.appendChild(option);
+            });
+
+            // Populate edit form content rating dropdown
+            const editRatingSelect = document.getElementById('editContentRating');
+            ratings.forEach(rating => {
+                const option = document.createElement('option');
+                option.value = rating;
+                option.textContent = rating;
+                editRatingSelect.appendChild(option);
+            });
         }
 
         // Load permission types from the backend
-        // This calls the permissions API to get all available permission types
         const permissionTypesResponse = await fetch(`${API_BASE_URL}/permissions/types`);
         if (permissionTypesResponse.ok) {
             const permissionTypes = await permissionTypesResponse.json();
-            const permissionTypesSelect = document.getElementById('permissionTypes');
             
-            // Clear the loading message
+            // Populate search form permission types dropdown
+            const permissionTypesSelect = document.getElementById('permissionTypes');
             permissionTypesSelect.innerHTML = '';
             
-            // Add an "All Types" option for when no specific types are selected
             const allOption = document.createElement('option');
             allOption.value = '';
             allOption.textContent = 'All Permission Types';
             permissionTypesSelect.appendChild(allOption);
             
-            // Add each permission type as an option
             permissionTypes.forEach(type => {
                 const option = document.createElement('option');
                 option.value = type;
-                option.textContent = type.charAt(0).toUpperCase() + type.slice(1); // Capitalize first letter
+                option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
                 permissionTypesSelect.appendChild(option);
             });
+
+            // Populate create form permission types dropdown
+            const createPermissionTypesSelect = document.getElementById('createPermissionTypes');
+            if (createPermissionTypesSelect) {
+                createPermissionTypesSelect.innerHTML = '';
+                
+                const createAllOption = document.createElement('option');
+                createAllOption.value = '';
+                createAllOption.textContent = 'All Permission Types';
+                createPermissionTypesSelect.appendChild(createAllOption);
+                
+                permissionTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    createPermissionTypesSelect.appendChild(option);
+                });
+            }
+
+            // Populate edit form permission types dropdown
+            const editPermissionTypesSelect = document.getElementById('editPermissionTypes');
+            if (editPermissionTypesSelect) {
+                editPermissionTypesSelect.innerHTML = '';
+                
+                const editAllOption = document.createElement('option');
+                editAllOption.value = '';
+                editAllOption.textContent = 'All Permission Types';
+                editPermissionTypesSelect.appendChild(editAllOption);
+                
+                permissionTypes.forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+                    editPermissionTypesSelect.appendChild(option);
+                });
+            }
         } else {
-            // If we can't load permission types, show a fallback message
             const permissionTypesSelect = document.getElementById('permissionTypes');
             permissionTypesSelect.innerHTML = '<option value="">Permission types unavailable</option>';
         }
     } catch (error) {
         console.error('Error loading form data:', error);
-        // Continue without dynamic options if backend is unavailable
         const permissionTypesSelect = document.getElementById('permissionTypes');
         permissionTypesSelect.innerHTML = '<option value="">Error loading permission types</option>';
     }
@@ -84,8 +153,16 @@ async function initializeForm() {
  * Set up event listeners for form interaction
  */
 function setupEventListeners() {
-    const form = document.getElementById('searchForm');
-    form.addEventListener('submit', handleFormSubmit);
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', handleFormSubmit);
+
+    // ADD MISSING EVENT LISTENER FOR CREATE FORM
+    const createForm = document.getElementById('createForm');
+    createForm.addEventListener('submit', handleCreate);
+
+    // ADD MISSING EVENT LISTENER FOR EDIT FORM
+    const editForm = document.getElementById('editForm');
+    editForm.addEventListener('submit', handleEdit);
 }
 
 /**
@@ -523,6 +600,21 @@ function editApp(appId) {
     document.getElementById('editPrice').value = app['Price'] || '';
     document.getElementById('editContentRating').value = app['Content Rating'] || '';
     document.getElementById('editDeveloperId').value = app['Developer Id'] || '';
+
+    // Populate permission types if available
+    const editPermissionTypes = document.getElementById('editPermissionTypes');
+    if (editPermissionTypes && app.permissions) {
+        // Clear all selections first
+        Array.from(editPermissionTypes.options).forEach(option => option.selected = false);
+        
+        // Select the permission types that the app currently has
+        const currentPermissionTypes = app.permissions.map(p => p.type);
+        Array.from(editPermissionTypes.options).forEach(option => {
+            if (currentPermissionTypes.includes(option.value)) {
+                option.selected = true;
+            }
+        });
+    }
 
     document.getElementById('editModal').classList.add('active');
 }

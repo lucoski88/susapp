@@ -727,3 +727,40 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
     document.getElementById(`${tabName}-panel`).classList.add('active');
 }
+
+async function addPermissionPair() {
+    const permissionTypesResponse = await fetch(`${API_BASE_URL}/permissions/types`);
+    let types;
+    if (permissionTypesResponse.ok) {
+        types = await permissionTypesResponse.json();
+    } else {
+        alert("Couldn't load permission types");
+        return;
+    }
+
+    const permissionPairContainer = document.getElementById('permissionPairsContainer');
+    const pair = document.createElement('div');
+    pair.style.cssText = 'width: 100%; display: flex;';
+
+    const permissionTypeSelect = document.createElement('select');
+    permissionTypeSelect.style.cssText = 'flex: 0.2; width: 20%;';
+    for (let type of types) {
+        const option = new Option(type, type);
+        permissionTypeSelect.append(option);
+    }
+
+    const permissionDescriptionInput = document.createElement('input');
+    permissionDescriptionInput.type = 'text';
+    permissionDescriptionInput.placeholder = 'Permission description';
+    permissionDescriptionInput.style.cssText = 'flex: 0.7;';
+
+    const removeBtn = document.createElement('input');
+    removeBtn.type = 'button';
+    removeBtn.value = '❌';
+    removeBtn.style.cssText = 'flex: 0.1';
+    removeBtn.onclick= (ev) => { permissionPairContainer.removeChild(pair) };
+
+    pair.append(permissionTypeSelect, permissionDescriptionInput, removeBtn);
+
+    permissionPairContainer.append(pair);
+}

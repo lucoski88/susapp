@@ -96,7 +96,12 @@ exports.create = async (req, res, next) => {
         const app = new App(req.body);
         const doc = await app.save();
         if (permissions) {
-            const permissionDetail = new Permission({appId: 'dioo', appName: 'dioo', allPermissions: [{permission: 'madonna', type: 'Camera'}]});
+            const permissionDoc = {
+                appId: app['App Id'],
+                appName: app['App Name'],
+                allPermissions: permissions
+            };
+            const permissionDetail = new Permission(permissionDoc);
             const doc = await permissionDetail.save();
         }
         res.status(201).json(doc);

@@ -1,4 +1,5 @@
 const App = require('../models/appModel');
+const Permission = require("../models/permissionModel");
 
 const defaultLimit = 10;
 const maxLimit = 100;
@@ -90,8 +91,14 @@ exports.find = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
+        const permissions = req.body.permissionTypes; // TODO RENAME PERMISSIONTYPES
+        delete req.body.permissionTypes;
         const app = new App(req.body);
         const doc = await app.save();
+        if (permissions) {
+            const permissionDetail = new Permission({appId: 'dioo', appName: 'dioo', allPermissions: [{permission: 'madonna', type: 'Camera'}]});
+            const doc = await permissionDetail.save();
+        }
         res.status(201).json(doc);
     } catch (err) {
         if (err.name === 'MongoServerError' && err.code === 11000) {

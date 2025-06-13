@@ -2,6 +2,7 @@ const API_BASE_URL = 'http://localhost:3000';
 
 // State management
 let currentResults = [];
+let curranteManageData = [];
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -374,4 +375,263 @@ function getPermissionClass(type) {
         return 'permission-normal';
     }
     return '';
+}
+
+// CREATE FUNCTIONALITY
+async function handleCreate(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const appData = Object.fromEntries(formData.entries());
+
+    // Convert numeric fields
+    if (appData.Rating) appData.Rating = parseFloat(appData.Rating);
+    if (appData.Price) appData.Price = parseFloat(appData.Price);
+    if (appData['Maximum Installs']) appData['Maximum Installs'] = parseInt(appData['Maximum Installs']);
+
+    showMessage('createMessage', 'Creating app...', 'info');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/apps/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(appData)
+        });
+
+        if (response.ok) {
+            showMessage('createMessage', 'App created successfully!', 'success');
+            clearCreateForm();
+        } else {
+            const error = await response.json();
+            showMessage('createMessage', `Error: ${error.error || 'Creation failed'}`, 'error');
+        }
+    } catch (error) {
+        showMessage('createMessage', 'Network error. Please try again.', 'error');
+    }
+}
+
+function clearCreateForm() {
+    document.getElementById('createForm').reset();
+}
+
+// MANAGE FUNCTIONALITY
+async function loadManageData() {
+    const searchTerm = document.getElementById('manageSearch').value;
+    const resultsDiv = document.getElementById('manageResults');
+    
+    resultsDiv.innerHTML = '<div class="loading">Loading apps...</div>';
+
+    try {
+        let url = `${API_BASE_URL}/apps?limit=50`;
+        if (searchTerm) {
+            url += `&appName=${encodeURIComponent(searchTerm)}`;
+        }
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to load apps');
+
+        const results = await response.json();
+        currentManageData = results;
+        displayManageResults(results);
+    } catch (error) {
+        resultsDiv.innerHTML = '<div class="message error">Failed to load apps. Please try again.</div>';
+    }
+}
+
+function refreshManageData() {
+    document.getElementById('manageSearch').value = '';
+    loadManageData();
+}
+
+function displayManageResults(results) {
+    const resultsDiv = document.getElementById('manageResults');
+    
+    if (results.length === 0) {
+        resultsDiv.innerHTML = '<div class="no-results">No apps found.</div>';
+        return;
+    }
+
+    const table = createResultsTable(results, true);
+    resultsDiv.innerHTML = `
+        <h3>Manage Apps (${results.length} apps loaded)</h3>
+        <div class="table-container">${table.outerHTML}</div>
+    `;
+}
+
+function createResultsTable(results, includeActions) {
+    const table = document.createElement('table');
+    table.className = 'results-table';
+
+    // Create header
+    const headers = ['App Name', 'App ID', 'Category', 'Rating', 'Price', 'Content Rating'];
+    if (includeActions) headers.push('Actions');
+
+    const headerRow = table.insertRow();
+    headers.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // Create rows
+    results.forEach(app => {
+        const row = table.insertRow();
+        
+        const nameCell = row.insertCell();
+        nameCell.textContent = app['App Name'] || 'N/A';
+        
+        const idCell = row.insertCell();
+        idCell.textContent = app['App Id'] || 'N/A';
+        
+        const categoryCell = row.insertCell();
+        categoryCell.textContent = app['Category'] || 'N/A';
+        
+        const ratingCell = row.insertCell();
+        ratingCell.textContent = app['Rating'] ? app['Rating'].toFixed(1) : 'N/A';
+        
+        const priceCell = row.insertCell();
+        priceCell.textContent = app['Price'] ? `$${app['Price'].toFixed(2)}` : 'Free';
+        
+        const contentRatingCell = row.insertCell();
+        contentRatingCell.textContent = app['Content Rating'] || 'N/A';
+        
+        if (includeActions) {
+            const actionsCell = row.insertCell();
+            actionsCell.innerHTML = `
+                <div class="action-buttons">
+                    <button class="btn btn-primary btn-small" onclick="editApp('${app['App Id']}')">Edit</button>
+                    <button class="btn btn-danger btn-small" onclick="deleteApp('${app['App Id']}')">Delete</button>
+                </div>
+            `;
+        }
+    });
+
+    return table;
+}
+
+// EDIT FUNCTIONALITY
+function editApp(appId) {
+    const app = currentManageData.find(a => a['App Id'] === appId);
+    if (!app) return;
+
+    // Populate edit form
+    document.getElementById('editAppId').value = appId;
+    document.getElementById('editAppName').value = app['App Name'] || '';
+    document.getElementById('editCategory').value = app['Category'] || '';
+    document.getElementById('editRating').value = app['Rating'] || '';
+    document.getElementById('editPrice').value = app['Price'] || '';
+    document.getElementById('editContentRating').value = app['Content Rating'] || '';
+    document.getElementById('editDeveloperId').value = app['Developer Id'] || '';
+
+    document.getElementById('editModal').classList.add('active');
+}
+
+async function handleEdit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const appId = formData.get('appId');
+    formData.delete('appId');
+
+    const updateData = Object.fromEntries(formData.entries());
+    
+    // Convert numeric fields
+    if (updateData.Rating) updateData.Rating = parseFloat(updateData.Rating);
+    if (updateData.Price) updateData.Price = parseFloat(updateData.Price);
+
+    showMessage('editMessage', 'Updating app...', 'info');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/apps/update?appId=${encodeURIComponent(appId)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updateData)
+        });
+
+        if (response.ok) {
+            showMessage('editMessage', 'App updated successfully!', 'success');
+            setTimeout(() => {
+                closeEditModal();
+                loadManageData(); // Refresh the manage data
+            }, 1500);
+        } else {
+            showMessage('editMessage', 'Update failed. Please try again.', 'error');
+        }
+    } catch (error) {
+        showMessage('editMessage', 'Network error. Please try again.', 'error');
+    }
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('active');
+    document.getElementById('editMessage').innerHTML = '';
+}
+
+// DELETE FUNCTIONALITY
+async function deleteApp(appId) {
+    if (!confirm(`Are you sure you want to delete the app with ID: ${appId}?`)) {
+        return;
+    }
+
+    showMessage('manageMessage', 'Deleting app...', 'info');
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/apps/delete?appId=${encodeURIComponent(appId)}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            showMessage('manageMessage', 'App deleted successfully!', 'success');
+            loadManageData(); // Refresh the data
+        } else {
+            showMessage('manageMessage', 'Delete failed. Please try again.', 'error');
+        }
+    } catch (error) {
+        showMessage('manageMessage', 'Network error. Please try again.', 'error');
+    }
+}
+
+// UTILITY FUNCTIONS
+function showMessage(elementId, message, type) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    element.innerHTML = `<div class="message ${type}">${message}</div>`;
+    
+    // Auto-hide success messages after 3 seconds
+    if (type === 'success') {
+        setTimeout(() => {
+            element.innerHTML = '';
+        }, 3000);
+    }
+}
+
+// Close modal when clicking outside
+document.getElementById('editModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeEditModal();
+    }
+});
+
+// Handle Enter key in search input
+document.getElementById('manageSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        loadManageData();
+    }
+});
+
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => switchTab(button.dataset.tab));
+});
+
+function switchTab(tabName) {
+    // Update active tab button
+    document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+    // Show correct panel
+    document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+    document.getElementById(`${tabName}-panel`).classList.add('active');
 }

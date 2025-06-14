@@ -235,12 +235,11 @@
                         <input type="text" id="editDeveloperId" name="Developer Id">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="editPermissionTypes">Permission Types</label>
-                    <select id="editPermissionTypes" name="permissionTypes" multiple style="height: 80px;">
-                        <option value="">Loading permission types...</option>
-                    </select>
-                    <small style="color: #666; font-size: 0.8rem;">Hold Ctrl/Cmd to select multiple types</small>
+                <div class="form-group" style="padding-bottom: 16px">
+                    <label>Permissions</label>
+                    <div id="permissionPairsContainerUpdate" style="border: 1px solid #ccc; border-radius: 8px 8px 0 0; max-height: 150px; overflow-y: scroll;">
+                    </div>
+                    <input onclick="addPermissionPairUpdate()" id="addPermissionPairUpdateBtn" type="button" style="border: 1px solid #ccc; border-radius: 0 0 8px 8px;" value="➕ Add permission">
                 </div>
                 <input type="hidden" id="editAppId" name="appId">
                 <div class="button-group">

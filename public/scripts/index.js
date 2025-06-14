@@ -601,7 +601,7 @@ function createResultsTable(results, includeActions) {
 }
 
 // EDIT FUNCTIONALITY
-function editApp(appId) {
+async function editApp(appId) {
     const app = currentManageData.find(a => a['App Id'] === appId);
     if (!app) return;
 
@@ -614,19 +614,43 @@ function editApp(appId) {
     document.getElementById('editContentRating').value = app['Content Rating'] || '';
     document.getElementById('editDeveloperId').value = app['Developer Id'] || '';
 
-    // Populate permission types if available
-    const editPermissionTypes = document.getElementById('editPermissionTypes');
-    if (editPermissionTypes && app.permissions) {
-        // Clear all selections first
-        Array.from(editPermissionTypes.options).forEach(option => option.selected = false);
-        
-        // Select the permission types that the app currently has
-        const currentPermissionTypes = app.permissions.map(p => p.type);
-        Array.from(editPermissionTypes.options).forEach(option => {
-            if (currentPermissionTypes.includes(option.value)) {
-                option.selected = true;
-            }
-        });
+    const permissionTypesResponse = await fetch(`${API_BASE_URL}/permissions/types`);
+    let types;
+    if (permissionTypesResponse.ok) {
+        types = await permissionTypesResponse.json();
+    } else {
+        alert("Couldn't load permission types");
+        return;
+    }
+    const permissionPairContainer = document.getElementById('permissionPairsContainerUpdate');
+    permissionPairContainer.innerHTML = ''
+    for (let permission of app.permissions) {
+        const pair = document.createElement('div');
+        pair.style.cssText = 'width: 100%; display: flex; align-items: center; justify-content: center;';
+
+        const permissionTypeSelect = document.createElement('select');
+        permissionTypeSelect.style.cssText = 'flex: 0.3; width: 100%;';
+        for (let type of types) {
+            const option = new Option(type, type);
+            permissionTypeSelect.append(option);
+        }
+        permissionTypeSelect.value = permission['type'];
+
+        const permissionDescriptionInput = document.createElement('input');
+        permissionDescriptionInput.type = 'text';
+        permissionDescriptionInput.value = permission['permission'];
+        permissionDescriptionInput.placeholder = 'Permission description';
+        permissionDescriptionInput.style.cssText = 'flex: 0.7; width: 100%;';
+
+        const removeBtn = document.createElement('input');
+        removeBtn.type = 'button';
+        removeBtn.value = '❌';
+        removeBtn.style.cssText = 'box-sizing: border-box;';
+        removeBtn.onclick= (ev) => { permissionPairContainer.removeChild(pair) };
+
+        pair.append(permissionTypeSelect, permissionDescriptionInput, removeBtn);
+
+        permissionPairContainer.append(pair);
     }
 
     document.getElementById('editModal').classList.add('active');
@@ -636,6 +660,7 @@ async function handleEdit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const appId = formData.get('appId');
+    const appName = formData.get('appName'); // TODO check this
     formData.delete('appId');
 
     const updateData = Object.fromEntries(formData.entries());
@@ -647,7 +672,7 @@ async function handleEdit(event) {
     showMessage('editMessage', 'Updating app...', 'info');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/apps/update?appId=${encodeURIComponent(appId)}`, {
+        let response = await fetch(`${API_BASE_URL}/apps/update?appId=${encodeURIComponent(appId)}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -663,7 +688,30 @@ async function handleEdit(event) {
             }, 1500);
         } else {
             showMessage('editMessage', 'Update failed. Please try again.', 'error');
+            return;
         }
+        const allPermissions = [];
+        const permissionsPairs = document.getElementById("permissionPairsContainerUpdate");
+        for (let pair of permissionsPairs.children) {
+            const select = pair.getElementsByTagName('select')[0];
+            const permissionDescription = pair.getElementsByTagName('input')[0];
+            const tmpJson = {
+                permission: permissionDescription.value,
+                type: select.value
+            };
+            allPermissions.push(tmpJson);
+        }
+        const permissionObj = {
+          allPermissions: allPermissions
+        };
+        console.log(JSON.stringify(permissionObj));
+        response = await fetch(`${API_BASE_URL}/permissions/update?appId=${encodeURIComponent(appId)}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(permissionObj)
+        });
     } catch (error) {
         showMessage('editMessage', 'Network error. Please try again.', 'error');
     }
@@ -752,6 +800,43 @@ async function addPermissionPair() {
     }
 
     const permissionPairContainer = document.getElementById('permissionPairsContainer');
+    const pair = document.createElement('div');
+    pair.style.cssText = 'width: 100%; display: flex; align-items: center; justify-content: center;';
+
+    const permissionTypeSelect = document.createElement('select');
+    permissionTypeSelect.style.cssText = 'flex: 0.3; width: 100%;';
+    for (let type of types) {
+        const option = new Option(type, type);
+        permissionTypeSelect.append(option);
+    }
+
+    const permissionDescriptionInput = document.createElement('input');
+    permissionDescriptionInput.type = 'text';
+    permissionDescriptionInput.placeholder = 'Permission description';
+    permissionDescriptionInput.style.cssText = 'flex: 0.7; width: 100%;';
+
+    const removeBtn = document.createElement('input');
+    removeBtn.type = 'button';
+    removeBtn.value = '❌';
+    removeBtn.style.cssText = 'box-sizing: border-box;';
+    removeBtn.onclick= (ev) => { permissionPairContainer.removeChild(pair) };
+
+    pair.append(permissionTypeSelect, permissionDescriptionInput, removeBtn);
+
+    permissionPairContainer.append(pair);
+}
+
+async function addPermissionPairUpdate() {
+    const permissionTypesResponse = await fetch(`${API_BASE_URL}/permissions/types`);
+    let types;
+    if (permissionTypesResponse.ok) {
+        types = await permissionTypesResponse.json();
+    } else {
+        alert("Couldn't load permission types");
+        return;
+    }
+
+    const permissionPairContainer = document.getElementById('permissionPairsContainerUpdate');
     const pair = document.createElement('div');
     pair.style.cssText = 'width: 100%; display: flex; align-items: center; justify-content: center;';
 

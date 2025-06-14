@@ -660,7 +660,7 @@ async function handleEdit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const appId = formData.get('appId');
-    const appName = formData.get('appName'); // TODO check this
+    const appName = formData.get('appName');
     formData.delete('appId');
 
     const updateData = Object.fromEntries(formData.entries());
@@ -704,7 +704,6 @@ async function handleEdit(event) {
         const permissionObj = {
           allPermissions: allPermissions
         };
-        console.log(JSON.stringify(permissionObj));
         response = await fetch(`${API_BASE_URL}/permissions/update?appId=${encodeURIComponent(appId)}`, {
             method: 'POST',
             headers: {

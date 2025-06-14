@@ -3,6 +3,7 @@ const app = express();
 
 const appsRouter = require('./routes/apps');
 const permissionsRouter = require('./routes/permissions');
+const {join} = require("node:path");
 
 // CORS headers to allow frontend requests
 app.use((req, res, next) => {
@@ -22,6 +23,11 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use('/apps', appsRouter);
 app.use('/permissions', permissionsRouter);
+
+app.use(express.static(join(__dirname, '../public')));
+app.get('/', (req, res) => {
+    res.sendFile(join(__dirname, '../public/index.html'));
+});
 
 /*
  * Fallback for not handled paths

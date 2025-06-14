@@ -731,7 +731,7 @@ async function deleteApp(appId) {
     showMessage('manageMessage', 'Deleting app...', 'info');
 
     try {
-        const response = await fetch(`${API_BASE_URL}/apps/delete?appId=${encodeURIComponent(appId)}`, {
+        let response = await fetch(`${API_BASE_URL}/apps/delete?appId=${encodeURIComponent(appId)}`, {
             method: 'DELETE'
         });
 
@@ -740,7 +740,11 @@ async function deleteApp(appId) {
             loadManageData(); // Refresh the data
         } else {
             showMessage('manageMessage', 'Delete failed. Please try again.', 'error');
+            return;
         }
+        response = await fetch(`${API_BASE_URL}/permissions/delete?appId=${encodeURIComponent(appId)}`, {
+            method: 'DELETE'
+        });
     } catch (error) {
         showMessage('manageMessage', 'Network error. Please try again.', 'error');
     }

@@ -236,11 +236,12 @@ async function handleFormSubmit(event) {
  */
 async function searchWithPermissionFilter(queryParams, selectedTypes) {
     showLoading();
-    
     try {
         // Step 1: Get apps that match the permission type criteria
         const permissionQuery = new URLSearchParams();
         permissionQuery.append('types', selectedTypes.join(','));
+        if (queryParams.has('appId')) permissionQuery.append('appId', queryParams.get('appId'));
+        if (queryParams.has('appName')) permissionQuery.append('appName', queryParams.get('appName'));
         permissionQuery.append('limit', '100'); // Get more results to ensure we have enough
         
         const permissionsResponse = await fetch(`${API_BASE_URL}/permissions?${permissionQuery.toString()}`);
@@ -262,7 +263,7 @@ async function searchWithPermissionFilter(queryParams, selectedTypes) {
         // Step 2: Get app details for those app IDs, applying other filters
         const appSearchPromises = appIdsWithDesiredPermissions.map(async (appId) => {
             const appQuery = new URLSearchParams(queryParams);
-            appQuery.append('appId', appId);
+            if (!queryParams.has('appId')) appQuery.append('appId', appId);
             
             try {
                 const response = await fetch(`${API_BASE_URL}/apps?${appQuery.toString()}`);
@@ -459,6 +460,18 @@ async function handleCreate(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const appData = Object.fromEntries(formData.entries());
+    const allPermissions = [];
+    const permissionsPairs = document.getElementById("permissionPairsContainer");
+    for (let pair of permissionsPairs.children) {
+        const select = pair.getElementsByTagName('select')[0];
+        const permissionDescription = pair.getElementsByTagName('input')[0];
+        const tmpJson = {
+            permission: permissionDescription.value,
+            type: select.value
+        };
+        allPermissions.push(tmpJson);
+    }
+    appData.allPermissions = allPermissions;
 
     // Convert numeric fields
     if (appData.Rating) appData.Rating = parseFloat(appData.Rating);
@@ -740,10 +753,10 @@ async function addPermissionPair() {
 
     const permissionPairContainer = document.getElementById('permissionPairsContainer');
     const pair = document.createElement('div');
-    pair.style.cssText = 'width: 100%; display: flex;';
+    pair.style.cssText = 'width: 100%; display: flex; align-items: center; justify-content: center;';
 
     const permissionTypeSelect = document.createElement('select');
-    permissionTypeSelect.style.cssText = 'flex: 0.2; width: 20%;';
+    permissionTypeSelect.style.cssText = 'flex: 0.3; width: 100%;';
     for (let type of types) {
         const option = new Option(type, type);
         permissionTypeSelect.append(option);
@@ -752,12 +765,12 @@ async function addPermissionPair() {
     const permissionDescriptionInput = document.createElement('input');
     permissionDescriptionInput.type = 'text';
     permissionDescriptionInput.placeholder = 'Permission description';
-    permissionDescriptionInput.style.cssText = 'flex: 0.7;';
+    permissionDescriptionInput.style.cssText = 'flex: 0.7; width: 100%;';
 
     const removeBtn = document.createElement('input');
     removeBtn.type = 'button';
     removeBtn.value = '❌';
-    removeBtn.style.cssText = 'flex: 0.1';
+    removeBtn.style.cssText = 'box-sizing: border-box;';
     removeBtn.onclick= (ev) => { permissionPairContainer.removeChild(pair) };
 
     pair.append(permissionTypeSelect, permissionDescriptionInput, removeBtn);

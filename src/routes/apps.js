@@ -11,6 +11,7 @@ router.get('/contentRatings', appsController.getAllContentRatings)
 
 router.use((err, req, res, next) => {
     res.sendStatus(500);
+    console.error(err);
 });
 
 module.exports = router;

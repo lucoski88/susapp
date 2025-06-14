@@ -91,15 +91,15 @@ exports.find = async (req, res, next) => {
 
 exports.create = async (req, res, next) => {
     try {
-        const permissions = req.body.permissionTypes; // TODO RENAME PERMISSIONTYPES
-        delete req.body.permissionTypes;
+        const allPermissions = req.body.allPermissions;
+        delete req.body.allPermissions;
         const app = new App(req.body);
         const doc = await app.save();
-        if (permissions) {
+        if (allPermissions) {
             const permissionDoc = {
                 appId: app['App Id'],
                 appName: app['App Name'],
-                allPermissions: permissions
+                allPermissions: allPermissions
             };
             const permissionDetail = new Permission(permissionDoc);
             const doc = await permissionDetail.save();

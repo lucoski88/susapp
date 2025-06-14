@@ -315,6 +315,7 @@ function displayResults(results) {
 
     // Create the results table
     const table = document.createElement('table');
+    table.className = 'results-table';
     
     // Create table header
     const headerRow = table.insertRow();
